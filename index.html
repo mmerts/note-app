@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not Uygulaması v2.0</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Modal for adding/editing notes -->
+    <div id="note-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Yeni Not Ekle</h3>
+                <button id="close-modal" class="close-btn">&times;</button>
+            </div>
+            <form id="note-form">
+                <div class="form-group">
+                    <label for="note-title">Not Başlığı:</label>
+                    <input type="text" id="note-title" required maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label for="note-content">Not İçeriği:</label>
+                    <textarea id="note-content" required maxlength="1000" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="note-category">Kategori:</label>
+                    <select id="note-category">
+                        <option value="genel">Genel</option>
+                        <option value="is">İş</option>
+                        <option value="kisisel">Kişisel</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="note-tags">Etiketler (virgül ile ayırın):</label>
+                    <input type="text" id="note-tags" placeholder="etiket1, etiket2" maxlength="200">
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="cancel-btn">İptal</button>
+                    <button type="submit" id="save-btn">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification container -->
+    <div id="notification-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
