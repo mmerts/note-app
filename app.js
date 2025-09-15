@@ -10,7 +10,6 @@ class NotApp {
     }
 
     init() {
-        this.elemanlariOlustur();
         this.olaylariEkle();
         this.klavyeKisayollariEkle();
         this.notlariGoster();
@@ -63,40 +62,6 @@ class NotApp {
         }, 3000);
     }
 
-    elemanlariOlustur() {
-        // Ana container
-        const app = document.createElement('div');
-        app.className = 'note-app';
-        app.innerHTML = `
-            <header class="app-header">
-                <h1>📝 Not Uygulaması v2.0</h1>
-                <div class="header-controls">
-                    <input type="text" id="arama" placeholder="Not ara... (Ctrl+F)">
-                    <select id="kategori-filtre">
-                        <option value="hepsi">Tüm Kategoriler</option>
-                        <option value="genel">Genel</option>
-                        <option value="is">İş</option>
-                        <option value="kisisel">Kişisel</option>
-                    </select>
-                    <button id="yeni-not-btn">Yeni Not (Ctrl+N)</button>
-                    <button id="theme-toggle" class="theme-toggle">🌓</button>
-                    <button id="export-btn">📤 Dışa Aktar</button>
-                </div>
-            </header>
-            <main id="notlar-container">
-                <!-- Notlar burada gösterilecek -->
-            </main>
-            <div class="shortcuts-info" id="shortcuts-info">
-                <strong>Klavye Kısayolları:</strong><br>
-                Ctrl+N: Yeni not<br>
-                Ctrl+F: Arama<br>
-                Ctrl+S: Kaydet<br>
-                Ctrl+?: Bu yardım<br>
-                Esc: Kapat
-            </div>
-        `;
-        document.body.appendChild(app);
-    }
 
     olaylariEkle() {
         // Event delegation kullanarak güvenlik sorunu çözülüyor
@@ -118,27 +83,39 @@ class NotApp {
             }
         });
 
-        document.getElementById('arama').addEventListener('input', (e) => {
-            this.notlariFiltrele(e.target.value);
-        });
+        const aramaInput = document.getElementById('arama');
+        if (aramaInput) {
+            aramaInput.addEventListener('input', (e) => {
+                this.notlariFiltrele(e.target.value);
+            });
+        }
 
-        document.getElementById('kategori-filtre').addEventListener('change', (e) => {
-            this.kategoriFiltresi = e.target.value;
-            this.notlariGoster();
-        });
+        const kategoriFiltreSelect = document.getElementById('kategori-filtre');
+        if (kategoriFiltreSelect) {
+            kategoriFiltreSelect.addEventListener('change', (e) => {
+                this.kategoriFiltresi = e.target.value;
+                this.notlariGoster();
+            });
+        }
 
         // Modal form submit
-        document.getElementById('note-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.notKaydet();
-        });
+        const noteForm = document.getElementById('note-form');
+        if (noteForm) {
+            noteForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.notKaydet();
+            });
+        }
 
         // Modal background click to close
-        document.getElementById('note-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'note-modal') {
-                this.modalKapat();
-            }
-        });
+        const noteModal = document.getElementById('note-modal');
+        if (noteModal) {
+            noteModal.addEventListener('click', (e) => {
+                if (e.target.id === 'note-modal') {
+                    this.modalKapat();
+                }
+            });
+        }
     }
 
     klavyeKisayollariEkle() {
@@ -151,7 +128,10 @@ class NotApp {
             // Ctrl+F: Arama odağı
             else if (e.ctrlKey && e.key === 'f') {
                 e.preventDefault();
-                document.getElementById('arama').focus();
+                const aramaInput = document.getElementById('arama');
+                if (aramaInput) {
+                    aramaInput.focus();
+                }
             }
             // Ctrl+S: Form kaydet (sadece modal açıkken)
             else if (e.ctrlKey && e.key === 's') {

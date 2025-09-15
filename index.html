@@ -7,6 +7,36 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Main Application Structure -->
+    <div class="note-app">
+        <header class="app-header">
+            <h1>📝 Not Uygulaması v2.0</h1>
+            <div class="header-controls">
+                <input type="text" id="arama" placeholder="Not ara... (Ctrl+F)">
+                <select id="kategori-filtre">
+                    <option value="hepsi">Tüm Kategoriler</option>
+                    <option value="genel">Genel</option>
+                    <option value="is">İş</option>
+                    <option value="kisisel">Kişisel</option>
+                </select>
+                <button id="yeni-not-btn">Yeni Not (Ctrl+N)</button>
+                <button id="theme-toggle" class="theme-toggle">🌓</button>
+                <button id="export-btn">📤 Dışa Aktar</button>
+            </div>
+        </header>
+        <main id="notlar-container">
+            <!-- Notlar burada gösterilecek -->
+        </main>
+        <div class="shortcuts-info" id="shortcuts-info">
+            <strong>Klavye Kısayolları:</strong><br>
+            Ctrl+N: Yeni not<br>
+            Ctrl+F: Arama<br>
+            Ctrl+S: Kaydet<br>
+            Ctrl+?: Bu yardım<br>
+            Esc: Kapat
+        </div>
+    </div>
+
     <!-- Modal for adding/editing notes -->
     <div id="note-modal" class="modal hidden">
         <div class="modal-content">
