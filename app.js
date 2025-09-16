@@ -5,7 +5,9 @@ class NotApp {
         this.kategoriFiltresi = 'hepsi';
         this.currentEditId = null;
         this.autoSaveTimer = null;
+        this.reminderTimer = null;
         this.theme = localStorage.getItem('theme') || 'light';
+        this.notificationPermission = false;
         this.init();
     }
 
@@ -15,6 +17,9 @@ class NotApp {
         this.notlariGoster();
         this.applyTheme();
         this.startAutoSave();
+        this.initializeReminders();
+        this.requestNotificationPermission();
+        this.updateReminderDashboard();
     }
 
     // HTML sanitization utility
@@ -47,6 +52,22 @@ class NotApp {
         
         return errors;
     }
+    
+    // Validate reminder input
+    validateReminder(dueDate, priority) {
+        const errors = [];
+        
+        if (dueDate && new Date(dueDate) < new Date()) {
+            errors.push('Hatırlatma tarihi geçmişte olamaz.');
+        }
+        
+        const validPriorities = ['none', 'low', 'medium', 'high', 'urgent'];
+        if (!validPriorities.includes(priority)) {
+            errors.push('Geçersiz öncelik seviyesi.');
+        }
+        
+        return errors;
+    }
 
     // Show notification
     showNotification(message, type = 'success') {
@@ -72,6 +93,8 @@ class NotApp {
                 this.toggleTheme();
             } else if (e.target.matches('#export-btn')) {
                 this.exportNotes();
+            } else if (e.target.matches('#reminder-toggle')) {
+                this.toggleReminderDashboard();
             } else if (e.target.matches('.sil-btn')) {
                 const id = parseInt(e.target.dataset.id);
                 this.notSil(id);
@@ -186,9 +209,14 @@ class NotApp {
         const icerik = document.getElementById('note-content').value.trim();
         const kategori = document.getElementById('note-category').value;
         const tags = document.getElementById('note-tags').value.trim();
+        const dueDate = document.getElementById('note-due-date').value;
+        const priority = document.getElementById('note-priority').value;
 
         // Input validation
-        const errors = this.validateInput(baslik, icerik, kategori);
+        const inputErrors = this.validateInput(baslik, icerik, kategori);
+        const reminderErrors = this.validateReminder(dueDate, priority);
+        const errors = [...inputErrors, ...reminderErrors];
+        
         if (errors.length > 0) {
             this.showNotification(errors.join(' '), 'error');
             return;
@@ -206,6 +234,8 @@ class NotApp {
                     icerik,
                     kategori,
                     tags: tagsArray,
+                    dueDate: dueDate || null,
+                    priority: priority || 'none',
                     guncellenmeTarihi: new Date().toLocaleDateString('tr-TR')
                 };
                 this.showNotification('Not başarıyla güncellendi!');
@@ -218,6 +248,9 @@ class NotApp {
                 icerik,
                 kategori,
                 tags: tagsArray,
+                dueDate: dueDate || null,
+                priority: priority || 'none',
+                reminderSent: false,
                 tarih: new Date().toLocaleDateString('tr-TR'),
                 guncellenmeTarihi: null
             };
@@ -228,6 +261,7 @@ class NotApp {
 
         this.notlariKaydet();
         this.notlariGoster();
+        this.updateReminderDashboard();
         this.modalKapat();
     }
 
@@ -241,6 +275,8 @@ class NotApp {
         document.getElementById('note-content').value = not.icerik;
         document.getElementById('note-category').value = not.kategori;
         document.getElementById('note-tags').value = not.tags ? not.tags.join(', ') : '';
+        document.getElementById('note-due-date').value = not.dueDate || '';
+        document.getElementById('note-priority').value = not.priority || 'none';
         
         this.modalAc(true);
     }
@@ -253,6 +289,7 @@ class NotApp {
             this.notlar = this.notlar.filter(not => not.id !== id);
             this.notlariKaydet();
             this.notlariGoster();
+            this.updateReminderDashboard();
             this.showNotification('Not başarıyla silindi!');
         }
     }
@@ -271,12 +308,18 @@ class NotApp {
         }
 
         // XSS vulnerability fixed: HTML sanitization kullanılıyor
-        container.innerHTML = filtrelenmisNotlar.map(not => `
-            <div class="note-card" data-kategori="${this.sanitizeHTML(not.kategori)}">
+        container.innerHTML = filtrelenmisNotlar.map(not => {
+            const isOverdue = not.dueDate && new Date(not.dueDate) < new Date();
+            const isDueSoon = not.dueDate && this.isDueSoon(not.dueDate);
+            const priorityClass = not.priority && not.priority !== 'none' ? `priority-${not.priority}` : '';
+            
+            return `
+            <div class="note-card ${priorityClass} ${isOverdue ? 'overdue' : ''} ${isDueSoon ? 'due-soon' : ''}" data-kategori="${this.sanitizeHTML(not.kategori)}">
                 <div class="note-header">
                     <h3>${this.sanitizeHTML(not.baslik)}</h3>
                     <div class="note-actions">
                         <span class="kategori-badge">${this.sanitizeHTML(not.kategori)}</span>
+                        ${not.priority && not.priority !== 'none' ? `<span class="priority-badge priority-${not.priority}">${this.getPriorityText(not.priority)}</span>` : ''}
                         <button class="edit-btn" data-id="${not.id}" title="Düzenle">✏️</button>
                         <button class="sil-btn" data-id="${not.id}" title="Sil">🗑️</button>
                     </div>
@@ -287,12 +330,18 @@ class NotApp {
                     </div>` : ''
                 }
                 <p class="note-content">${this.sanitizeHTML(not.icerik)}</p>
+                ${not.dueDate ? `<div class="note-reminder">
+                    <span class="reminder-icon">${isOverdue ? '🔴' : '🔔'}</span>
+                    <span class="due-date">Tarih: ${new Date(not.dueDate).toLocaleDateString('tr-TR')}</span>
+                    ${isOverdue ? '<span class="overdue-text">GEÇMİŞ!</span>' : ''}
+                </div>` : ''}
                 <small class="note-date">
                     Oluşturulma: ${not.tarih}
                     ${not.guncellenmeTarihi ? ` | Güncelleme: ${not.guncellenmeTarihi}` : ''}
                 </small>
             </div>
-        `).join('');
+        `;
+        }).join('');
     }
 
     notlariFiltrele(aramaMetni) {
@@ -404,10 +453,182 @@ class NotApp {
         }
     }
 
+    // === REMINDER SYSTEM METHODS ===
+    
+    // Request notification permission
+    async requestNotificationPermission() {
+        if ('Notification' in window) {
+            const permission = await Notification.requestPermission();
+            this.notificationPermission = permission === 'granted';
+            if (this.notificationPermission) {
+                this.showNotification('Bildirimler etkinleştirildi!', 'success');
+            } else {
+                this.showNotification('Bildirim izni reddedildi. Hatırlatmalar çalışmayabilir.', 'warning');
+            }
+        }
+    }
+    
+    // Initialize reminder system
+    initializeReminders() {
+        // Check for overdue and upcoming reminders every minute
+        this.reminderTimer = setInterval(() => {
+            this.checkReminders();
+        }, 60000);
+        
+        // Check immediately on load
+        this.checkReminders();
+    }
+    
+    // Check for due reminders
+    checkReminders() {
+        const now = new Date();
+        let updatedNotes = false;
+        
+        this.notlar.forEach(not => {
+            if (!not.dueDate || not.reminderSent) return;
+            
+            const dueDate = new Date(not.dueDate);
+            const timeDiff = dueDate - now;
+            const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            
+            // Send notification for overdue or due soon notes
+            if (timeDiff <= 0 && !not.reminderSent) {
+                this.sendNotification(`⚠️ Geciken Not: ${not.baslik}`, `Bu not ${Math.abs(daysDiff)} gün önce sona ermeliydi!`);
+                not.reminderSent = true;
+                updatedNotes = true;
+            } else if (daysDiff <= 1 && timeDiff > 0 && !not.reminderSent) {
+                this.sendNotification(`🔔 Yaklaşan Not: ${not.baslik}`, `Bu not ${daysDiff} gün içinde sona erecek!`);
+                not.reminderSent = true;
+                updatedNotes = true;
+            }
+        });
+        
+        if (updatedNotes) {
+            this.notlariKaydet();
+            this.updateReminderDashboard();
+        }
+    }
+    
+    // Send notification
+    sendNotification(title, body) {
+        if (!this.notificationPermission) return;
+        
+        try {
+            new Notification(title, {
+                body: body,
+                icon: '📝',
+                badge: '🔔'
+            });
+        } catch (error) {
+            console.error('Notification error:', error);
+        }
+    }
+    
+    // Check if note is due soon (within 24 hours)
+    isDueSoon(dueDate) {
+        const now = new Date();
+        const due = new Date(dueDate);
+        const diffHours = (due - now) / (1000 * 60 * 60);
+        return diffHours > 0 && diffHours <= 24;
+    }
+    
+    // Get priority text
+    getPriorityText(priority) {
+        const priorities = {
+            'low': 'Düşük',
+            'medium': 'Orta',
+            'high': 'Yüksek',
+            'urgent': 'Acil'
+        };
+        return priorities[priority] || '';
+    }
+    
+    // Toggle reminder dashboard
+    toggleReminderDashboard() {
+        const dashboard = document.getElementById('reminder-dashboard');
+        dashboard.classList.toggle('hidden');
+        this.updateReminderDashboard();
+    }
+    
+    // Update reminder dashboard
+    updateReminderDashboard() {
+        const dashboard = document.getElementById('reminder-dashboard');
+        if (!dashboard) return;
+        
+        const overdueNotes = this.getOverdueNotes();
+        const upcomingNotes = this.getUpcomingNotes();
+        const totalReminders = this.getTotalReminders();
+        
+        const statsHTML = `
+            <div class="reminder-stats">
+                <div class="stat-card urgent">
+                    <div class="stat-number">${overdueNotes.length}</div>
+                    <div class="stat-label">Geciken</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-number">${upcomingNotes.length}</div>
+                    <div class="stat-label">Yaklaşan</div>
+                </div>
+                <div class="stat-card info">
+                    <div class="stat-number">${totalReminders}</div>
+                    <div class="stat-label">Toplam</div>
+                </div>
+            </div>
+        `;
+        
+        const urgentHTML = overdueNotes.length > 0 ? `
+            <div class="urgent-notes">
+                <h4>🚨 Acil Notlar</h4>
+                ${overdueNotes.slice(0, 5).map(not => `
+                    <div class="urgent-note-item">
+                        <span class="urgent-title">${this.sanitizeHTML(not.baslik)}</span>
+                        <span class="days-overdue">${this.getDaysOverdue(not.dueDate)} gün gecikti</span>
+                    </div>
+                `).join('')}
+                ${overdueNotes.length > 5 ? `<div class="more-notes">+${overdueNotes.length - 5} tane daha...</div>` : ''}
+            </div>
+        ` : '';
+        
+        dashboard.innerHTML = statsHTML + urgentHTML;
+    }
+    
+    // Get overdue notes
+    getOverdueNotes() {
+        const now = new Date();
+        return this.notlar.filter(not => not.dueDate && new Date(not.dueDate) < now);
+    }
+    
+    // Get upcoming notes (due within 3 days)
+    getUpcomingNotes() {
+        const now = new Date();
+        const threeDaysFromNow = new Date(now.getTime() + (3 * 24 * 60 * 60 * 1000));
+        return this.notlar.filter(not => {
+            if (!not.dueDate) return false;
+            const dueDate = new Date(not.dueDate);
+            return dueDate >= now && dueDate <= threeDaysFromNow;
+        });
+    }
+    
+    // Get total reminders count
+    getTotalReminders() {
+        return this.notlar.filter(not => not.dueDate).length;
+    }
+    
+    // Get days overdue
+    getDaysOverdue(dueDate) {
+        const now = new Date();
+        const due = new Date(dueDate);
+        const diffTime = now - due;
+        return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    }
+    
     // Cleanup method
     destroy() {
         if (this.autoSaveTimer) {
             clearInterval(this.autoSaveTimer);
+        }
+        if (this.reminderTimer) {
+            clearInterval(this.reminderTimer);
         }
     }
 }

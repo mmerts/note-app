@@ -449,3 +449,282 @@ body {
     background-color: #fbbf24;
     color: #000;
 }
+
+/* === REMINDER SYSTEM STYLES === */
+
+/* Reminder Dashboard */
+.reminder-dashboard {
+    background: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+.reminder-dashboard.hidden {
+    display: none;
+}
+
+.reminder-dashboard h3 {
+    color: var(--text-color);
+    margin-bottom: 16px;
+    font-size: 1.125rem;
+}
+
+/* Reminder Stats */
+.reminder-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background: var(--background-color);
+    border-radius: var(--border-radius);
+    padding: 16px;
+    text-align: center;
+    border: 2px solid transparent;
+    transition: var(--transition);
+}
+
+.stat-card.urgent {
+    border-color: var(--danger-color);
+    background: rgba(220, 38, 38, 0.1);
+}
+
+.stat-card.warning {
+    border-color: var(--warning-color);
+    background: rgba(217, 119, 6, 0.1);
+}
+
+.stat-card.info {
+    border-color: var(--primary-color);
+    background: rgba(37, 99, 235, 0.1);
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--secondary-color);
+    margin-top: 4px;
+}
+
+/* Urgent Notes */
+.urgent-notes {
+    margin-top: 16px;
+}
+
+.urgent-notes h4 {
+    color: var(--danger-color);
+    margin-bottom: 12px;
+    font-size: 1rem;
+}
+
+.urgent-note-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: rgba(220, 38, 38, 0.05);
+    border-left: 3px solid var(--danger-color);
+    margin-bottom: 8px;
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+}
+
+.urgent-title {
+    font-weight: 500;
+    color: var(--text-color);
+    flex: 1;
+    margin-right: 12px;
+}
+
+.days-overdue {
+    font-size: 0.75rem;
+    color: var(--danger-color);
+    font-weight: bold;
+    background: rgba(220, 38, 38, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.more-notes {
+    text-align: center;
+    color: var(--secondary-color);
+    font-style: italic;
+    font-size: 0.875rem;
+    margin-top: 8px;
+}
+
+/* Note Card Priority Styles */
+.note-card.priority-low {
+    border-left: 4px solid #10b981;
+}
+
+.note-card.priority-medium {
+    border-left: 4px solid var(--warning-color);
+}
+
+.note-card.priority-high {
+    border-left: 4px solid #f59e0b;
+}
+
+.note-card.priority-urgent {
+    border-left: 4px solid var(--danger-color);
+    box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.2), var(--shadow);
+}
+
+.note-card.overdue {
+    background: rgba(220, 38, 38, 0.05);
+    border-color: var(--danger-color);
+}
+
+.note-card.due-soon {
+    background: rgba(217, 119, 6, 0.05);
+    border-color: var(--warning-color);
+}
+
+/* Priority Badge */
+.priority-badge {
+    font-size: 0.75rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+    margin-left: 8px;
+}
+
+.priority-badge.priority-low {
+    background: rgba(16, 185, 129, 0.2);
+    color: #065f46;
+}
+
+.priority-badge.priority-medium {
+    background: rgba(217, 119, 6, 0.2);
+    color: #92400e;
+}
+
+.priority-badge.priority-high {
+    background: rgba(245, 158, 11, 0.2);
+    color: #b45309;
+}
+
+.priority-badge.priority-urgent {
+    background: rgba(220, 38, 38, 0.2);
+    color: #991b1b;
+}
+
+[data-theme="dark"] .priority-badge.priority-low {
+    color: #34d399;
+}
+
+[data-theme="dark"] .priority-badge.priority-medium {
+    color: #fbbf24;
+}
+
+[data-theme="dark"] .priority-badge.priority-high {
+    color: #f59e0b;
+}
+
+[data-theme="dark"] .priority-badge.priority-urgent {
+    color: #f87171;
+}
+
+/* Note Reminder Section */
+.note-reminder {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0;
+    padding: 8px;
+    background: rgba(37, 99, 235, 0.1);
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+}
+
+.note-card.overdue .note-reminder {
+    background: rgba(220, 38, 38, 0.15);
+}
+
+.note-card.due-soon .note-reminder {
+    background: rgba(217, 119, 6, 0.15);
+}
+
+.reminder-icon {
+    font-size: 1rem;
+}
+
+.due-date {
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.overdue-text {
+    color: var(--danger-color);
+    font-weight: bold;
+    font-size: 0.75rem;
+    background: rgba(220, 38, 38, 0.2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: auto;
+}
+
+/* Form Updates for Reminder Fields */
+.form-group input[type="datetime-local"] {
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 8px 12px;
+    color: var(--text-color);
+    font-family: inherit;
+    transition: var(--transition);
+}
+
+.form-group input[type="datetime-local"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Reminder Toggle Button */
+.reminder-toggle {
+    background: var(--warning-color);
+    color: white;
+}
+
+.reminder-toggle:hover {
+    background: #b45309;
+    transform: translateY(-2px);
+}
+
+/* Mobile responsiveness for reminder dashboard */
+@media (max-width: 768px) {
+    .reminder-stats {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+    
+    .stat-card {
+        padding: 12px 8px;
+    }
+    
+    .stat-number {
+        font-size: 1.25rem;
+    }
+    
+    .urgent-note-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    
+    .days-overdue {
+        align-self: flex-end;
+    }
+}

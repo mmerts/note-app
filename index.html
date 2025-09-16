@@ -20,10 +20,18 @@
                     <option value="kisisel">Kişisel</option>
                 </select>
                 <button id="yeni-not-btn">Yeni Not (Ctrl+N)</button>
+                <button id="reminder-toggle" class="reminder-toggle">🔔 Hatırlatmalar</button>
                 <button id="theme-toggle" class="theme-toggle">🌓</button>
                 <button id="export-btn">📤 Dışa Aktar</button>
             </div>
         </header>
+        
+        <!-- Reminder Dashboard -->
+        <div id="reminder-dashboard" class="reminder-dashboard hidden">
+            <h3>🔔 Hatırlatma Panosu</h3>
+            <!-- Dashboard content will be populated by JavaScript -->
+        </div>
+        
         <main id="notlar-container">
             <!-- Notlar burada gösterilecek -->
         </main>
@@ -64,6 +72,20 @@
                 <div class="form-group">
                     <label for="note-tags">Etiketler (virgül ile ayırın):</label>
                     <input type="text" id="note-tags" placeholder="etiket1, etiket2" maxlength="200">
+                </div>
+                <div class="form-group">
+                    <label for="note-due-date">Hatırlatma Tarihi:</label>
+                    <input type="datetime-local" id="note-due-date">
+                </div>
+                <div class="form-group">
+                    <label for="note-priority">Öncelik Seviyesi:</label>
+                    <select id="note-priority">
+                        <option value="none">Yok</option>
+                        <option value="low">Düşük</option>
+                        <option value="medium">Orta</option>
+                        <option value="high">Yüksek</option>
+                        <option value="urgent">Acil</option>
+                    </select>
                 </div>
                 <div class="form-actions">
                     <button type="button" id="cancel-btn">İptal</button>
