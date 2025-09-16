@@ -4,11 +4,21 @@ Basit ve kullanışlı bir not alma uygulaması.
 
 ## 📝 Özellikler
 
+### Temel Özellikler
 - Not oluşturma, düzenleme ve silme
 - Notları kategorilere ayırma
 - Arama fonksiyonu
 - Responsive tasarım
 - Yerel depolama (LocalStorage)
+
+### Yeni Özellikler (v2.0)
+- 🔍 Gelişmiş arama filtresi
+- 🎨 Tema değiştirme (açık/koyu mod)
+- 📎 Not etiketleme sistemi
+- 🔔 Hatırlatma bildirimleri
+- 📤 Notları JSON/PDF formatında dışa aktarma
+- 🔄 Otomatik kaydetme
+- ⌨️ Klavye kısayolları
 
 ## 🚀 Kurulum
 
@@ -48,10 +58,17 @@ http://localhost:3000
 
 ## 🛠️ Teknolojiler
 
+### Frontend
 - HTML5
-- CSS3
+- CSS3 (Grid, Flexbox, CSS Variables)
 - JavaScript (ES6+)
-- LocalStorage API
+- Web APIs (LocalStorage, Notification)
+
+### Geliştirme Araçları
+- Claude Code (AI-powered development)
+- GitHub Actions (CI/CD)
+- ESLint (Code quality)
+- Prettier (Code formatting)
 
 ## 📂 Proje Yapısı
 

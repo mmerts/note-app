@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not Uygulaması v2.0</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Main Application Structure -->
+    <div class="note-app">
+        <header class="app-header">
+            <h1>📝 Not Uygulaması v2.0</h1>
+            <div class="header-controls">
+                <input type="text" id="arama" placeholder="Not ara... (Ctrl+F)">
+                <select id="kategori-filtre">
+                    <option value="hepsi">Tüm Kategoriler</option>
+                    <option value="genel">Genel</option>
+                    <option value="is">İş</option>
+                    <option value="kisisel">Kişisel</option>
+                </select>
+                <button id="yeni-not-btn">Yeni Not (Ctrl+N)</button>
+                <button id="reminder-toggle" class="reminder-toggle">🔔 Hatırlatmalar</button>
+                <button id="theme-toggle" class="theme-toggle">🌓</button>
+                <button id="export-btn">📤 Dışa Aktar</button>
+            </div>
+        </header>
+        
+        <!-- Reminder Dashboard -->
+        <div id="reminder-dashboard" class="reminder-dashboard hidden">
+            <h3>🔔 Hatırlatma Panosu</h3>
+            <!-- Dashboard content will be populated by JavaScript -->
+        </div>
+        
+        <main id="notlar-container">
+            <!-- Notlar burada gösterilecek -->
+        </main>
+        <div class="shortcuts-info" id="shortcuts-info">
+            <strong>Klavye Kısayolları:</strong><br>
+            Ctrl+N: Yeni not<br>
+            Ctrl+F: Arama<br>
+            Ctrl+S: Kaydet<br>
+            Ctrl+?: Bu yardım<br>
+            Esc: Kapat
+        </div>
+    </div>
+
+    <!-- Modal for adding/editing notes -->
+    <div id="note-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Yeni Not Ekle</h3>
+                <button id="close-modal" class="close-btn">&times;</button>
+            </div>
+            <form id="note-form">
+                <div class="form-group">
+                    <label for="note-title">Not Başlığı:</label>
+                    <input type="text" id="note-title" required maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label for="note-content">Not İçeriği:</label>
+                    <textarea id="note-content" required maxlength="1000" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="note-category">Kategori:</label>
+                    <select id="note-category">
+                        <option value="genel">Genel</option>
+                        <option value="is">İş</option>
+                        <option value="kisisel">Kişisel</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="note-tags">Etiketler (virgül ile ayırın):</label>
+                    <input type="text" id="note-tags" placeholder="etiket1, etiket2" maxlength="200">
+                </div>
+                <div class="form-group">
+                    <label for="note-due-date">Hatırlatma Tarihi:</label>
+                    <input type="datetime-local" id="note-due-date">
+                </div>
+                <div class="form-group">
+                    <label for="note-priority">Öncelik Seviyesi:</label>
+                    <select id="note-priority">
+                        <option value="none">Yok</option>
+                        <option value="low">Düşük</option>
+                        <option value="medium">Orta</option>
+                        <option value="high">Yüksek</option>
+                        <option value="urgent">Acil</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="cancel-btn">İptal</button>
+                    <button type="submit" id="save-btn">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification container -->
+    <div id="notification-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
